@@ -1,38 +1,18 @@
-const express = require('express');
-const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth20')
-const keys = require('./config/key')
+const express = require("express");
+const mongoose = require("mongoose");
+const keys = require('./config/key');
+require('./models/User')
+require("./services/passport");
+// Mongo Installed && Mongoose Installed
+// Need to be able to identify users who sign up and return to our application.
+// We want to save the 'id' in their google profile
+mongoose.connect(keys.mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
+
+
+
 const app = express();
-
-passport.use(new GoogleStrategy(
-    {
-    clientID: keys.googleClientID,
-    clientSecret: keys.googleClientSecret,
-    callbackURL: '/auth/google/callback'
-    },
-    (accessToken, refreshToken, profile, done) => {
-        console.log(accessToken)
-        console.log(refreshToken)
-        console.log(profile)
-        console.log(" "+ done)
-    }
-
-));
-
-app.get(
-    '/auth/google',
-    passport.authenticate('google', {
-        scope: ['profile', 'email']
-    })
-)
-
-// client ID 758725786283-ek0a6t676ic0esubh0q64uh9tqp5g8jv.apps.googleusercontent.com
-// Key LBH2r1ga9ZEVpANFcu-SisZp
-
-// app.get('/', (req, res) => {
-//     res.send({ bye: 'buddy' });
-// });
+require("./routes/authRoutes")(app);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT)
+app.listen(PORT);
