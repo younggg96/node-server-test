@@ -17,9 +17,15 @@ const app = express();
 app.use(
   cookieSession({
     maxAge: 30 * 24 * 60 * 60 * 1000,
+    // it will randomly pick one to use to encrypt any given cookie
     keys: [keys.cookieKey]
   })
 );
+
+// use cookie to handle auth
+app.use(passport.initialize());
+app.use(passport.session());
+
 require("./routes/authRoutes")(app);
 
 const PORT = process.env.PORT || 5000;
